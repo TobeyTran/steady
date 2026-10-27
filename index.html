@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Steady: practice speaking without the pressure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F2F6F7;
+  --surface: #FFFFFF;
+  --ink: #16252F;
+  --muted: #53656F;
+  --accent: #2B7A83;
+  --accent-ink: #FFFFFF;
+  --line: #D4E0E4;
+  --mark: #F6D58E;
+  --mark-ink: #3A2A00;
+  --orb-a: #CBE9EC;
+  --orb-b: #86C4CA;
+  --orb-ink: #0F3A40;
+  color-scheme: light;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0F1A21;
+    --surface: #17262F;
+    --ink: #E6EEF1;
+    --muted: #A3B7C0;
+    --accent: #6CC3CB;
+    --accent-ink: #0B1A20;
+    --line: #2A3D48;
+    --mark: #8A6A1F;
+    --mark-ink: #FFF3D6;
+    --orb-a: #2C5963;
+    --orb-b: #3F8791;
+    --orb-ink: #E6F6F8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0F1A21;
+  --surface: #17262F;
+  --ink: #E6EEF1;
+  --muted: #A3B7C0;
+  --accent: #6CC3CB;
+  --accent-ink: #0B1A20;
+  --line: #2A3D48;
+  --mark: #8A6A1F;
+  --mark-ink: #FFF3D6;
+  --orb-a: #2C5963;
+  --orb-b: #3F8791;
+  --orb-ink: #E6F6F8;
+  color-scheme: dark;
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+a { color: var(--accent); }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+
+header.top { padding: 22px 0 0; }
+.brand { font-weight: 700; font-size: 1.35rem; letter-spacing: -0.01em; }
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+  padding: 48px 0 64px;
+}
+h1 {
+  font-size: clamp(2.1rem, 5.2vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  margin: 0 0 18px;
+  max-width: 14ch;
+}
+.lede { color: var(--muted); max-width: 46ch; margin: 0 0 26px; }
+.btn {
+  font: inherit;
+  font-weight: 600;
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: 0;
+  border-radius: 999px;
+  padding: 12px 24px;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.06); }
+.btn.quiet {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--line);
+}
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
+.link-row { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
+
+.orb-wrap { display: grid; justify-items: center; gap: 18px; }
+.orb-stage { width: min(72vw, 320px); aspect-ratio: 1; display: grid; place-items: center; }
+.orb {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, var(--orb-a), var(--orb-b));
+  color: var(--orb-ink);
+  display: grid;
+  place-items: center;
+  transform: scale(0.72);
+  transition: transform 1s ease-in-out, opacity 1s ease-in-out;
+}
+.orb span { font-weight: 600; font-size: 1.25rem; }
+.breath-meta { color: var(--muted); font-size: 0.95rem; margin: 0; min-height: 1.5em; }
+
+section.block { padding: 8px 0 64px; }
+h2 { font-size: clamp(1.5rem, 3.4vw, 2.1rem); line-height: 1.15; letter-spacing: -0.015em; margin: 0 0 10px; }
+.sub { color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 22px;
+}
+.controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 14px; }
+.clock { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1.15rem; min-width: 3.2em; }
+textarea {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  font: inherit;
+  line-height: 1.55;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.row { display: flex; gap: 14px; align-items: end; flex-wrap: wrap; margin-top: 14px; }
+label.f { display: grid; gap: 4px; font-size: 0.92rem; color: var(--muted); }
+input[type="number"] {
+  font: inherit;
+  width: 8.5em;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  padding: 9px 12px;
+}
+.note { color: var(--muted); font-size: 0.9rem; margin: 12px 0 0; max-width: 70ch; }
+
+.audience-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.seg { display: inline-flex; border: 1.5px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { font: inherit; font-size: 0.92rem; background: transparent; color: var(--ink); border: 0; padding: 8px 14px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.seg button:focus-visible { outline-offset: -3px; }
+.room { background: var(--bg); border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; min-height: 96px; }
+.room svg { width: 56px; height: 56px; flex: 0 0 auto; }
+.room.one svg { width: 96px; height: 96px; }
+.room-caption { margin: 10px 0 18px; color: var(--muted); font-size: 0.95rem; min-height: 1.5em; }
+.results { margin-top: 22px; border-top: 1px solid var(--line); padding-top: 20px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat { border-left: 3px solid var(--accent); padding: 2px 0 2px 12px; }
+.stat b { display: block; font-size: 1.7rem; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.stat small { color: var(--muted); font-size: 0.88rem; }
+.transcript {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+mark { background: var(--mark); color: var(--mark-ink); padding: 0 3px; border-radius: 4px; }
+.verdict { margin: 14px 0 0; }
+
+.tiers { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.tier { padding: 22px; border-radius: 14px; }
+.tier.free { background: var(--surface); border: 1px solid var(--line); }
+.tier.premium { border: 1.5px dashed var(--accent); }
+.tier h3 { margin: 0 0 4px; font-size: 1.2rem; }
+.tier p.s { margin: 0 0 12px; color: var(--muted); font-size: 0.95rem; }
+.tier ul { margin: 0; padding-left: 1.2em; }
+.tier li { margin-bottom: 8px; }
+
+footer { border-top: 1px solid var(--line); padding: 22px 0 36px; color: var(--muted); font-size: 0.92rem; }
+
+@media (max-width: 760px) {
+  .hero { grid-template-columns: 1fr; padding-top: 32px; gap: 32px; }
+  .tiers { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orb { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top"><div class="brand">Steady</div></header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div>
+        <h1 id="hero-title">Practice the talk before anyone is watching.</h1>
+        <p class="lede">Steady helps you settle your nerves first, then shows you how you actually sound: your pace and your filler words.</p>
+        <div class="link-row">
+          <a class="btn" href="#coach" style="text-decoration:none;display:inline-block">Try the speech coach</a>
+        </div>
+      </div>
+
+      <div class="orb-wrap">
+        <div class="orb-stage">
+          <div class="orb" id="orb"><span id="breathLabel" aria-live="polite">Ready</span></div>
+        </div>
+        <button class="btn quiet" id="breathBtn" type="button">Begin breathing</button>
+        <p class="breath-meta" id="breathMeta">Breathe in for 4, hold for 2, out for 6.</p>
+      </div>
+    </section>
+
+    <section class="block" id="coach" aria-labelledby="coach-title">
+      <h2 id="coach-title">Run a practice speech</h2>
+      <p class="sub">Pick an audience, then speak out loud and let the page listen, or type or paste what you said. The listeners react to your pace and your filler words.</p>
+
+      <div class="panel">
+        <div class="audience-head">
+          <strong>Your audience</strong>
+          <div class="seg" role="group" aria-label="Audience size" id="seg">
+            <button type="button" data-size="1" aria-pressed="true">One listener</button>
+            <button type="button" data-size="4" aria-pressed="false">Small group</button>
+            <button type="button" data-size="12" aria-pressed="false">Full room</button>
+          </div>
+        </div>
+        <div class="room one" id="room" aria-hidden="true"></div>
+        <p class="room-caption" id="roomCaption" aria-live="polite">Start with one listener, then build up to a full room.</p>
+        <div class="controls">
+          <button class="btn" id="startBtn" type="button">Start practice</button>
+          <button class="btn quiet" id="stopBtn" type="button" disabled>Stop</button>
+          <span class="clock" id="clock" aria-live="off">0:00</span>
+        </div>
+
+        <label class="f" for="speech">What you said</label>
+        <textarea id="speech" placeholder="Press Start practice and speak, or type or paste your speech here."></textarea>
+
+        <div class="row">
+          <label class="f" for="dur">Time spoken (seconds)
+            <input id="dur" type="number" min="0" step="1" inputmode="numeric">
+          </label>
+          <button class="btn" id="analyzeBtn" type="button">Get feedback</button>
+          <button class="btn quiet" id="clearBtn" type="button">Clear</button>
+        </div>
+
+        <p class="note" id="srNote"></p>
+        <p class="note">Browser speech recognition often leaves out ums and uhs, so for the fairest count, type or paste what you said. Typed text stays in your browser. If you use the microphone, your browser may send audio to its own speech service.</p>
+
+        <div class="results" id="results" hidden aria-live="polite">
+          <div class="stats">
+            <div class="stat"><b id="sWords">0</b><small>words</small></div>
+            <div class="stat"><b id="sPace">–</b><small>words per minute</small></div>
+            <div class="stat"><b id="sFill">0</b><small>filler words</small></div>
+            <div class="stat"><b id="sRate">0</b><small>fillers per 100 words</small></div>
+          </div>
+          <div class="transcript" id="marked"></div>
+          <p class="verdict" id="paceNote"></p>
+          <p class="verdict" id="fillNote"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="tiers-title">
+      <h2 id="tiers-title">Free to practice. Paid when you want more.</h2>
+      <p class="sub">The free version should be good enough that people come back and tell their friends. Premium goes deeper.</p>
+
+      <div class="tiers">
+        <div class="tier free">
+          <h3>Free</h3>
+          <p class="s">Works in this prototype today.</p>
+          <ul>
+            <li>Guided breathing to settle your nerves</li>
+            <li>A starter virtual audience, from one listener to a full room</li>
+            <li>Practice runs with a timer</li>
+            <li>Pace and filler-word feedback</li>
+          </ul>
+        </div>
+        <div class="tier premium">
+          <h3>Premium</h3>
+          <p class="s">Planned. About $70 per year, with a student rate.</p>
+          <ul>
+            <li>Richer audiences: tough questions, interruptions, and settings like a classroom or an interview panel</li>
+            <li>Eye contact and gesture feedback from your camera</li>
+            <li>Progress history across every practice</li>
+            <li>Score yourself against a class or interview rubric</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>Steady is a student prototype built for a class pitch. It is a practice tool, not therapy or medical care.</footer>
+</div>
+
+<script>
+(function () {
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------- Breathing ---------- */
+  var orb = document.getElementById("orb");
+  var label = document.getElementById("breathLabel");
+  var btn = document.getElementById("breathBtn");
+  var meta = document.getElementById("breathMeta");
+  var phases = [
+    { name: "Breathe in", secs: 4, scale: 1 },
+    { name: "Hold", secs: 2, scale: 1 },
+    { name: "Breathe out", secs: 6, scale: 0.72 }
+  ];
+  var breathing = false, breathTimer = null, cycles = 0;
+  var idleText = "Breathe in for 4, hold for 2, out for 6.";
+
+  function runPhase(i) {
+    if (!breathing) return;
+    var p = phases[i];
+    label.textContent = p.name;
+    if (!reduce) {
+      orb.style.transitionDuration = p.secs + "s";
+      orb.style.transform = "scale(" + p.scale + ")";
+    } else {
+      orb.style.opacity = p.scale === 1 ? "1" : "0.7";
+    }
+    breathTimer = setTimeout(function () {
+      if (i === phases.length - 1) {
+        cycles += 1;
+        meta.textContent = cycles + (cycles === 1 ? " breath completed" : " breaths completed");
+      }
+      runPhase((i + 1) % phases.length);
+    }, p.secs * 1000);
+  }
+
+  btn.addEventListener("click", function () {
+    if (!breathing) {
+      breathing = true;
+      cycles = 0;
+      meta.textContent = "0 breaths completed";
+      btn.textContent = "Stop";
+      runPhase(0);
+    } else {
+      breathing = false;
+      clearTimeout(breathTimer);
+      btn.textContent = "Begin breathing";
+      label.textContent = "Ready";
+      meta.textContent = cycles > 0 ? "Nice work. " + cycles + (cycles === 1 ? " breath" : " breaths") + " completed." : idleText;
+      if (!reduce) {
+        orb.style.transitionDuration = "1s";
+        orb.style.transform = "scale(0.72)";
+      } else {
+        orb.style.opacity = "1";
+      }
+    }
+  });
+
+  /* ---------- Speech coach ---------- */
+  var $ = function (id) { return document.getElementById(id); };
+  var speech = $("speech"), dur = $("dur"), clock = $("clock");
+  var startBtn = $("startBtn"), stopBtn = $("stopBtn");
+  var analyzeBtn = $("analyzeBtn"), clearBtn = $("clearBtn");
+  var srNote = $("srNote"), results = $("results");
+
+  var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var rec = null, running = false, startTime = 0, tick = null, baseText = "", finalText = "";
+
+  srNote.textContent = SR
+    ? "Microphone transcription is available in this browser."
+    : "This browser can’t transcribe speech, so type or paste what you said.";
+
+  function fmt(sec) {
+    var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
+    return m + ":" + (s < 10 ? "0" : "") + s;
+  }
+
+  function startPractice() {
+    if (running) return;
+    running = true;
+    startTime = Date.now();
+    baseText = speech.value.trim();
+    finalText = "";
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    lastLive = -1;
+    listenAudience();
+    clock.textContent = "0:00";
+    tick = setInterval(function () {
+      var el = (Date.now() - startTime) / 1000;
+      clock.textContent = fmt(el);
+      var whole = Math.floor(el);
+      if (whole % 3 === 0 && whole !== lastLive) { lastLive = whole; liveReact(el); }
+    }, 250);
+
+    if (SR) {
+      try {
+        rec = new SR();
+        rec.continuous = true;
+        rec.interimResults = true;
+        rec.lang = "en-US";
+        rec.onresult = function (e) {
+          var interim = "";
+          for (var i = e.resultIndex; i < e.results.length; i++) {
+            var t = e.results[i][0].transcript;
+            if (e.results[i].isFinal) { finalText += t + " "; } else { interim += t; }
+          }
+          speech.value = (baseText + " " + finalText + interim).trim();
+        };
+        rec.onerror = function (e) {
+          if (e.error === "not-allowed" || e.error === "service-not-allowed") {
+            srNote.textContent = "Microphone access is blocked here. Type or paste what you said instead.";
+          } else if (e.error !== "no-speech" && e.error !== "aborted") {
+            srNote.textContent = "Speech recognition stopped (" + e.error + "). You can keep typing instead.";
+          }
+        };
+        rec.onend = function () {
+          if (running) { try { rec.start(); } catch (err) {} }
+        };
+        rec.start();
+      } catch (err) {
+        srNote.textContent = "Couldn’t start the microphone. Type or paste what you said instead.";
+      }
+    }
+  }
+
+  function stopPractice() {
+    if (!running) return;
+    running = false;
+    clearInterval(tick);
+    if (rec) { try { rec.stop(); } catch (err) {} }
+    var elapsed = (Date.now() - startTime) / 1000;
+    dur.value = Math.max(1, Math.round(elapsed));
+    startBtn.disabled = false;
+    stopBtn.disabled = true;
+    analyze();
+  }
+
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  var fillerRe = /\b(um+|uh+|erm|er|ah|you know|i mean|kind of|sort of|basically|actually|literally|like)\b/gi;
+
+  function analyze() {
+    var text = speech.value.trim();
+    if (!text) {
+      results.hidden = false;
+      $("sWords").textContent = "0";
+      $("sPace").textContent = "–";
+      $("sFill").textContent = "0";
+      $("sRate").textContent = "0";
+      $("marked").textContent = "";
+      $("paceNote").textContent = "Nothing to analyze yet. Speak, type, or paste a few sentences, then try again.";
+      $("fillNote").textContent = "";
+      return;
+    }
+
+    var words = text.match(/[A-Za-z0-9\u2019']+/g) || [];
+    var wc = words.length;
+    var seconds = parseFloat(dur.value);
+    var counts = {}, total = 0;
+
+    var markedHtml = esc(text).replace(fillerRe, function (m) {
+      var k = m.toLowerCase().replace(/(um|uh)+$/, function (x) { return x.slice(0, 2); });
+      counts[k] = (counts[k] || 0) + 1;
+      total += 1;
+      return "<mark>" + m + "</mark>";
+    });
+
+    var rate = wc ? (total / wc) * 100 : 0;
+    $("sWords").textContent = wc;
+    $("sFill").textContent = total;
+    $("sRate").textContent = rate.toFixed(1);
+    $("marked").innerHTML = markedHtml;
+
+    if (seconds > 0) {
+      var wpm = Math.round(wc / (seconds / 60));
+      $("sPace").textContent = wpm;
+      var msg;
+      if (wpm < 110) msg = "That’s on the slower side. Slow can sound calm, so keep your energy up and avoid long trailing pauses.";
+      else if (wpm <= 160) msg = "That’s a comfortable range for most audiences. As a rough guide, conversational speech often sits around 120 to 160 words per minute.";
+      else msg = "That’s fast. Try pausing at the end of each idea so your listeners can keep up.";
+      $("paceNote").textContent = msg;
+    } else {
+      $("sPace").textContent = "–";
+      $("paceNote").textContent = "Add how many seconds you spoke to see your pace.";
+    }
+
+    if (total === 0) {
+      $("fillNote").textContent = "No filler words found in this text.";
+    } else {
+      var parts = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; })
+        .map(function (k) { return "“" + k + "” × " + counts[k]; });
+      $("fillNote").textContent = "Filler words found: " + parts.join(", ") + ". Words like “like” and “actually” are sometimes used on purpose, so treat this as a guide.";
+    }
+    results.hidden = false;
+    reactAudience(wc, total, seconds);
+  }
+
+  /* ---------- Virtual audience ---------- */
+  var sizeSel = 1, lastStats = null, lastLive = -1;
+  var roomEl = $("room"), capEl = $("roomCaption"), seg = $("seg");
+  var defaultCaption = "Start with one listener, then build up to a full room.";
+  var tones = ["#F2C9A5", "#D9A58A", "#B98A6B", "#8F6A52", "#F0D9B5", "#C8946F", "#E8B796", "#A97C5E", "#F5D3B3", "#CF9C7C", "#B58463", "#E0B08C"];
+  var faces = {
+    good: { eyes: [[18, 21], [30, 21]], mouth: "M17 31 Q24 38 31 31" },
+    ok:   { eyes: [[18, 21], [30, 21]], mouth: "M18 33 L30 33" },
+    lost: { eyes: [[21, 21], [33, 21]], mouth: "M18 35 Q24 30 30 35" }
+  };
+
+  function avatar(i, mood) {
+    var f = faces[mood];
+    return '<svg viewBox="0 0 48 48" focusable="false">' +
+      '<circle cx="24" cy="24" r="22" fill="' + tones[i % tones.length] + '"/>' +
+      '<circle cx="' + f.eyes[0][0] + '" cy="' + f.eyes[0][1] + '" r="2.4" fill="#16252F"/>' +
+      '<circle cx="' + f.eyes[1][0] + '" cy="' + f.eyes[1][1] + '" r="2.4" fill="#16252F"/>' +
+      '<path d="' + f.mouth + '" fill="none" stroke="#16252F" stroke-width="2.4" stroke-linecap="round"/></svg>';
+  }
+
+  function renderRoom(moods) {
+    roomEl.className = "room" + (sizeSel === 1 ? " one" : "");
+    var html = "";
+    for (var i = 0; i < sizeSel; i++) html += avatar(i, moods ? moods[i] : "ok");
+    roomEl.innerHTML = html;
+  }
+
+  function moodsFor(wc, total, seconds) {
+    var rate = wc ? (total / wc) * 100 : 0;
+    var wpm = seconds > 0 ? wc / (seconds / 60) : 0;
+    var penalty = 0;
+    penalty += rate > 8 ? 2 : (rate > 4 ? 1 : 0);
+    if (wpm > 0) penalty += (wpm > 180 || wpm < 90) ? 2 : ((wpm > 160 || wpm < 110) ? 1 : 0);
+    var out = [];
+    for (var i = 0; i < sizeSel; i++) {
+      var adj = (i % 3 === 0) ? 1 : ((i % 3 === 2) ? -1 : 0);
+      var eff = penalty === 0 ? 0 : penalty + adj;
+      out.push(eff <= 0 ? "good" : (eff <= 2 ? "ok" : "lost"));
+    }
+    return { moods: out, rate: rate, wpm: wpm };
+  }
+
+  function reactAudience(wc, total, seconds) {
+    if (!wc) {
+      lastStats = null;
+      renderRoom(null);
+      capEl.textContent = "Say or type a few sentences and your audience will react.";
+      return;
+    }
+    lastStats = { wc: wc, total: total, seconds: seconds };
+    var r = moodsFor(wc, total, seconds);
+    renderRoom(r.moods);
+    var lost = r.moods.filter(function (m) { return m === "lost"; }).length;
+    var good = r.moods.filter(function (m) { return m === "good"; }).length;
+    var hints = [];
+    if (r.wpm > 160) hints.push("pause between ideas");
+    if (r.wpm > 0 && r.wpm < 110) hints.push("add a bit more energy");
+    if (r.rate > 4) hints.push("trim the filler words");
+    var tip = hints.length ? " Try to " + hints.join(" and ") + "." : "";
+    var msg;
+    if (sizeSel === 1) {
+      msg = r.moods[0] === "good" ? "Your listener is with you." : (r.moods[0] === "ok" ? "Your listener is mostly with you." : "Your listener is drifting.");
+    } else if (good === sizeSel) {
+      msg = "The whole room is following along.";
+    } else if (lost > sizeSel / 2) {
+      msg = "You’re losing much of the room.";
+    } else {
+      msg = "Most of the room is listening, but a few are drifting.";
+    }
+    capEl.textContent = msg + (good === sizeSel ? "" : tip);
+  }
+
+  function liveReact(elapsed) {
+    var text = speech.value.trim();
+    var wc = (text.match(/[A-Za-z0-9\u2019']+/g) || []).length;
+    if (wc < 12 || elapsed < 8) return;
+    var total = (text.match(fillerRe) || []).length;
+    reactAudience(wc, total, elapsed);
+  }
+
+  function listenAudience() {
+    lastStats = null;
+    renderRoom(null);
+    capEl.textContent = "Your audience is listening.";
+  }
+
+  function resetAudience() {
+    lastStats = null;
+    renderRoom(null);
+    capEl.textContent = defaultCaption;
+  }
+
+  seg.addEventListener("click", function (e) {
+    var b = e.target.closest("button[data-size]");
+    if (!b) return;
+    sizeSel = parseInt(b.getAttribute("data-size"), 10);
+    Array.prototype.forEach.call(seg.querySelectorAll("button"), function (x) {
+      x.setAttribute("aria-pressed", x === b ? "true" : "false");
+    });
+    if (lastStats) { reactAudience(lastStats.wc, lastStats.total, lastStats.seconds); }
+    else { renderRoom(null); }
+  });
+
+  renderRoom(null);
+
+  startBtn.addEventListener("click", startPractice);
+  stopBtn.addEventListener("click", stopPractice);
+  analyzeBtn.addEventListener("click", analyze);
+  clearBtn.addEventListener("click", function () {
+    if (running) stopPractice();
+    speech.value = "";
+    dur.value = "";
+    clock.textContent = "0:00";
+    results.hidden = true;
+    resetAudience();
+  });
+})();
+</script>
+</body>
+</html>
